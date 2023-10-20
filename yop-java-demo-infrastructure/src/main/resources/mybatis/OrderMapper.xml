@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yeepay.yop.scenario.bindcard.infrastructure.tunnel.mapper.OrderMapper">
+    <resultMap id="resultMap" type="com.yeepay.yop.scenario.bindcard.infrastructure.tunnel.dataobject.OrderDO">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parentMerchantNo" column="parent_merchant_no"/>
+        <result property="merchantNo" column="merchant_no"/>
+        <result property="status" column="status"/>
+        <result property="price" column="price"/>
+        <result property="token" column="token"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into tbl_order(id, gmt_create, gmt_modified, user_id, parent_merchant_no, merchant_no, status, price,
+                              token)
+        values (#{id}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, #{userId}, #{parentMerchantNo}, #{merchantNo}, #{status},
+                #{price},
+                #{token})
+    </insert>
+
+    <update id="updateById">
+        update tbl_order
+        set set gmt_modified = CURRENT_TIMESTAMP,
+            user_id            = #{et.userId},
+            parent_merchant_no = #{et.parentMerchantNo},
+            merchant_no        = #{et.merchantNo},
+            status             = #{et.status},
+            price              = #{et.price},
+            token              = #{et.token}
+        where id = #{et.id}
+    </update>
+
+    <select id="selectById" resultMap="resultMap">
+        select *
+        from tbl_order
+        where id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete
+        from tbl_order
+        where id = #{id}
+    </delete>
+
+    <select id="findAll" resultMap="resultMap">
+        select *
+        from tbl_order
+    </select>
+</mapper>
