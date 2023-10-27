@@ -155,7 +155,7 @@ yop-java-demo
     "userNo": "your userNo"
     }'
     ```
-11. 支付结果通知：/yop-callback/rest/bind-pay/call-back/result。用于接收支付结果，对接文档：[结果通知快速对接网关](https://open.yeepay.com/docs/open/platform-doc/notifys/yop-isv-gateways-sm)。
+11. 支付结果通知：/yop-callback/rest/bind-pay/call-back/result。用于接收支付结果，对接文档：[结果通知快速对接网关](https://open.yeepay.com/docs/open/platform-doc/notifys/yop-isv-gateways-sm)。通过实现`YopBaseCallbackHandler`接口中的`getType`方法，配置结果通知uri。
 
     > 注：结果通知目前接收不到。可以联系技术支持查询报文，手动发起结果通知。
 
