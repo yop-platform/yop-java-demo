@@ -32,10 +32,16 @@ import java.util.Map;
 @Slf4j
 public class BindPayCallbackHandler extends YopBaseCallbackHandler {
     private static final String SUCCESS = "SUCCESS";
+    private static final String PROCESSING = "PROCESSING";
 
     @Setter(onMethod_ = @Autowired)
     private OrderService orderService;
 
+    /**
+     * 支付结果的通知地址
+     *
+     * @return
+     */
     @Override
     public String getType() {
         return "/rest/bind-pay/call-back/result";
@@ -54,8 +60,6 @@ public class BindPayCallbackHandler extends YopBaseCallbackHandler {
         if (ObjectUtils.isEmpty(map.get("payerInfo"))) {
             log.error("payer info not found.");
         }
-        Map<String, Object> payerInfo = JsonUtils.fromJsonString((String) map.get("payerInfo"), Map.class);
-        ;
         String parentMerchantNo = (String) map.get("parentMerchantNo");
         String merchantNo = (String) map.get("merchantNo");
         String status = (String) map.get("status");
@@ -64,9 +68,11 @@ public class BindPayCallbackHandler extends YopBaseCallbackHandler {
         if (SUCCESS.equals(status)) {
             order.setStatus(OrderStatus.PAYED.name());
             orderService.update(order);
-        } else {
-            //其他状态
+        } else if (!PROCESSING.equals(status)) {
+            //如果状态不是SUCCESS和PROCESSING，状态改为“已取消”
             log.info("order status is:{}", status);
+            order.setStatus(OrderStatus.CANCEL.name());
+            orderService.update(order);
         }
     }
 }

@@ -36,12 +36,16 @@ import java.util.List;
 @Slf4j
 public class OrderSchedule {
     private static final String SUCCESS = "SUCCESS";
+    private static final String PROCESSING = "PROCESSING";
 
     @Setter(onMethod_ = @Autowired)
     private OrderGateway orderGateway;
     @Setter(onMethod_ = @Autowired)
     private OrderService orderService;
 
+    /**
+     * 每5秒调用易宝查询订单接口。商户可以自行实现分布式定时任务
+     */
     @Async
     @Scheduled(cron = "0/5 * * * * ?")
     public void taskOrderQuery() {
@@ -61,9 +65,11 @@ public class OrderSchedule {
                         if (SUCCESS.equals(response.getResult().getStatus())) {
                             order.setStatus(OrderStatus.PAYED.name());
                             orderService.updateByUserIdAndToken(order);
+                        } else if (!PROCESSING.equals(response.getResult().getStatus())) {
+                            //如果状态不是SUCCESS和PROCESSING，状态改为“已取消”
+                            order.setStatus(OrderStatus.CANCEL.name());
+                            orderService.update(order);
                         }
-                        //如果状态是TIME_OUT：订单已过期、FAIL:订单支付失败、CLOSE:订单关闭，同步为“已取消”
-
                     }
                 }
             }
